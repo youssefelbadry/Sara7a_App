@@ -48,3 +48,21 @@ export const resetPasswordSchema = {
     otp: generalField.otp.required(),
   }),
 };
+export const updatePasswordSchema = {
+  body: Joi.object({
+    email: generalField.email.required(),
+    password: generalField.password,
+    newPassword: Joi.string()
+      .messages({
+        "string.empty": "Password cannot be empty",
+        "any.required": "Password is required",
+      })
+      .required(),
+    confirmNewPassword: Joi.string()
+      .messages({
+        "string.empty": "Password cannot be empty",
+        "any.required": "Password is required",
+      })
+      .required(),
+  }),
+};

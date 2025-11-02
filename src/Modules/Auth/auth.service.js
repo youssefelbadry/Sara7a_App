@@ -202,6 +202,36 @@ export const refreshToken = async (req, res, next) => {
     data: { userToken },
   });
 };
+export const updatePassword = async (req, res, next) => {
+  const { email, password, newPassword, confirmNewPassword } = req.body;
+
+  const user = await dbService.findOne({
+    model: userModel,
+    filter: { email, confirmEmail: { $exists: true } },
+  });
+  if (!user)
+    return next(new Error("User not founded or not confirmed", { cause: 404 }));
+
+  if (!(await compare({ planText: password, hash: user.password }))) {
+    return next(new Error("Invalid current password", { cause: 401 }));
+  }
+  if (newPassword !== confirmNewPassword)
+    return next(new Error("New passwords do not match", { cause: 401 }));
+
+  await dbService.updateOne({
+    model: userModel,
+    filter: { email },
+    data: {
+      password: await hash({ planText: newPassword }),
+    },
+  });
+
+  return SuccessResponse({
+    res,
+    statusCode: 201,
+    message: "Updated password is successfully",
+  });
+};
 
 export const forgetPassword = async (req, res, next) => {
   const { email } = req.body;

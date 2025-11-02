@@ -48,3 +48,12 @@ export const updateProfile = async (req, res, next) => {
     data: user,
   });
 };
+
+export const profileImage = async (req, res, next) => {
+  return SuccessResponse({
+    res,
+    statusCode: 200,
+    message: "User profile updated successfully",
+    data: { file: req.file },
+  });
+};

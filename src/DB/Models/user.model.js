@@ -58,6 +58,8 @@ const userShcema = new mongoose.Schema(
     },
     phone: String,
     confirmEmail: Date || Boolean,
+    newPassword: String,
+    confirmNewPassword: String,
     confirmEmailOtp: String,
     otpExpiresAt: Date || Boolean,
     forgetPasswordOTP: String,

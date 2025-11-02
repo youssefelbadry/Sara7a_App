@@ -8,8 +8,8 @@ import {
   loginSchema,
   resetPasswordSchema,
   signupSchema,
+  updatePasswordSchema,
 } from "./auth.validators.js";
-import { localFileUploud } from "../../Utils/Multer/local.multer.util.js";
 
 const router = Router();
 
@@ -22,6 +22,11 @@ router.post(
 );
 router.post("/logout", authentication, authService.logout);
 router.post("/refreshToken", authService.refreshToken);
+router.patch(
+  "/updatePassword",
+  validation(updatePasswordSchema),
+  authService.updatePassword
+);
 router.patch(
   "/forget-password",
   validation(forgetPasswordSchema),
@@ -38,10 +43,4 @@ router.post(
   authService.loginWithGmail
 );
 
-router.post(
-  "/profile-image",
-  authentication,
-  localFileUploud().single("profileImage"),
-  authService.profileImage
-);
 export default router;
