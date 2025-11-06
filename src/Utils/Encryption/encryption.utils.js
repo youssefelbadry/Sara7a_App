@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
+import { type } from "node:os";
+import { format } from "node:path";
 const Encrypted_Secret_Key = Buffer.from(
   JSON.toString(process.env.ENCREPTION_KEY)
 );
@@ -29,10 +31,11 @@ export const decrypt = (decryptedData) => {
   decrypted += decipher.final("utf8");
   return decrypted;
 };
+
 // =================================================================================
 // Assemetric
 
-if (fs.existsSync("public_key_pem") && fs.existsSync("private_key_pem")) {
+if (fs.existsSync("public_key.pem") && fs.existsSync("private_key.pem")) {
   console.log("Key already exsist");
 } else {
   const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
@@ -40,8 +43,8 @@ if (fs.existsSync("public_key_pem") && fs.existsSync("private_key_pem")) {
     publicKeyEncoding: { type: "pkcs1", format: "pem" },
     privateKeyEncoding: { type: "pkcs1", format: "pem" },
   });
-  fs.writeFileSync("public_key_pem", publicKey);
-  fs.writeFileSync("private_key_pem", privateKey);
+  fs.writeFileSync("public_key.pem", publicKey);
+  fs.writeFileSync("private_key.pem", privateKey);
 }
 // =======
 export const asymmtrecEncrypt = (plainText) => {
@@ -49,7 +52,7 @@ export const asymmtrecEncrypt = (plainText) => {
 
   const encreptedData = crypto.publicEncrypt(
     {
-      key: fs.readFileSync("public_key_pem", "utf8"),
+      key: fs.readFileSync("public_key.pem", "utf8"),
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
     },
     bufferedText
@@ -63,7 +66,7 @@ export const asymmtrecDecrypt = (cipherText) => {
 
   const decreptedData = crypto.privateDecrypt(
     {
-      key: fs.readFileSync("private_key_pem", "utf8"),
+      key: fs.readFileSync("private_key.pem", "utf8"),
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
     },
     bufferedCipherText
