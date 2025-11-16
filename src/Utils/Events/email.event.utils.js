@@ -8,7 +8,7 @@ eventEmitter.on("confirmEmail", async (data) => {
   await sendEmail({
     to: data.to,
     subject: emailSubject.confirmEmail,
-    html: template(data.otp, data.firstName),
+    html: template(data.otp, data.firstName, emailSubject.confirmEmail),
   }).catch((err) => {
     console.log(`Error sending confirm email ${err}`);
   });

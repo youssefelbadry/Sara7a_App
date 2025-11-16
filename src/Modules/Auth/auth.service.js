@@ -7,7 +7,11 @@ import {
 } from "../../Utils/Encryption/encryption.utils.js";
 import { compare, hash } from "../../Utils/Hashing/hash.utils.js";
 import { eventEmitter } from "../../Utils/Events/email.event.utils.js";
-import { generateToken, virifyToken } from "../../Utils/Tokens/token.util.js";
+import {
+  generateToken,
+  getNewLoginCredientials,
+  virifyToken,
+} from "../../Utils/Tokens/token.util.js";
 import { v4 as uuid } from "uuid";
 import TokenModel from "../../DB/Models/token.model.js";
 import moment from "moment/moment.js";
@@ -138,27 +142,12 @@ export const login = async (req, res, next) => {
     return next(new Error("Confirm your email", { cause: 400 }));
   }
 
-  const userToken = generateToken({
-    payloud: { id: checkuser._id, email: checkuser.email },
-    secretKey: process.env.SECRET_KEY_TOKEN,
-    options: {
-      expiresIn: parseInt(process.env.EXIPIRESIN_TOKEN),
-      jwtid: uuid(),
-    },
-  });
-  const refreshToken = generateToken({
-    payloud: { id: checkuser._id, email: checkuser.email },
-    secretKey: process.env.SECRET_KEY_REFRESH_TOKEN,
-    options: {
-      expiresIn: parseInt(process.env.EXIPIRESIN_REFRESh_TOKEN),
-      jwtid: uuid(),
-    },
-  });
+  const Credientials = await getNewLoginCredientials(checkuser);
   return SuccessResponse({
     res,
     statusCode: 201,
     message: "User loggin Sucessfuly",
-    data: { userToken, refreshToken },
+    data: { Credientials },
   });
 };
 
@@ -180,26 +169,14 @@ export const logout = async (req, res, next) => {
 };
 
 export const refreshToken = async (req, res, next) => {
-  const { refreshtoken } = req.headers;
-  const decoded = virifyToken({
-    token: refreshtoken,
-    secretKey: process.env.SECRET_KEY_REFRESH_TOKEN,
-  });
-
-  const userToken = generateToken({
-    payloud: { id: decoded.id, email: decoded.email },
-    secretKey: process.env.SECRET_KEY_TOKEN,
-    options: {
-      expiresIn: parseInt(process.env.EXIPIRESIN_TOKEN),
-      jwtid: uuid(),
-    },
-  });
+  const { user } = req.user;
+  const Credientials = await getNewLoginCredientials(user);
 
   return SuccessResponse({
     res,
     statusCode: 201,
     message: "Token refreshed Sucessfuly",
-    data: { userToken },
+    data: { Credientials },
   });
 };
 export const updatePassword = async (req, res, next) => {
@@ -263,15 +240,12 @@ export const forgetPassword = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
   const { email, otp, password } = req.body;
 
-  const user = await dbService.findOneAndUpdate({
+  const user = await dbService.findOne({
     model: userModel,
     filter: {
       email,
       forgetPasswordOTP: { $exists: true },
       confirmEmail: { $exists: true },
-    },
-    data: {
-      password: await hash({ planText: password }),
     },
   });
   if (!user) return next(new Error("Invalid your account", { cause: 404 }));
@@ -356,26 +330,11 @@ export const loginWithGmail = async (req, res, next) => {
       provider: providerEnum.GOOGLE,
     },
   });
-  const userToken = generateToken({
-    payloud: { id: newUser._id, email: newUser.email },
-    secretKey: process.env.SECRET_KEY_TOKEN,
-    options: {
-      expiresIn: parseInt(process.env.EXIPIRESIN_TOKEN),
-      jwtid: uuid(),
-    },
-  });
-  const refreshToken = generateToken({
-    payloud: { id: newUser._id, email: newUser.email },
-    secretKey: process.env.SECRET_KEY_REFRESH_TOKEN,
-    options: {
-      expiresIn: parseInt(process.env.EXIPIRESIN_REFRESh_TOKEN),
-      jwtid: uuid(),
-    },
-  });
+  const Credientials = await getNewLoginCredientials(newUser);
   return SuccessResponse({
     res,
     statusCode: 201,
     message: "User loggin Sucessfuly",
-    data: { userToken, refreshToken },
+    data: { Credientials },
   });
 };

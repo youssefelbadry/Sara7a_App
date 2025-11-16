@@ -1,0 +1,4 @@
+::1 - - [16/Nov/2025:17:05:21 +0000] "PATCH /api/v1/users/updateProfile HTTP/1.1" 500 784
+::1 - - [16/Nov/2025:17:05:41 +0000] "PATCH /api/v1/users/updateProfile HTTP/1.1" 500 796
+::1 - - [16/Nov/2025:17:05:49 +0000] "PATCH /api/v1/users/updateProfile HTTP/1.1" 401 201
+::1 - - [16/Nov/2025:17:06:03 +0000] "PATCH /api/v1/users/updateProfile HTTP/1.1" 200 1904

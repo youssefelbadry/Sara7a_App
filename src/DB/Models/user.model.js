@@ -8,7 +8,10 @@ export const providerEnum = {
   SYSTEM: "SYSTEM",
   GOOGLE: "GOOGLE",
 };
-
+export const roleEnum = {
+  USER: "USER",
+  ADMIN: "ADMIN",
+};
 const userShcema = new mongoose.Schema(
   {
     firstName: {
@@ -56,7 +59,19 @@ const userShcema = new mongoose.Schema(
       },
       default: providerEnum.SYSTEM,
     },
+    role: {
+      type: String,
+      enum: {
+        values: Object.values(roleEnum),
+        message: "{Value} is not a valid role",
+      },
+      default: roleEnum.USER,
+    },
     phone: String,
+    profileImage: String,
+    coverImages: [String],
+    cloudProfileImage: { public_id: String, secure_url: String },
+    cloudCoverImages: [{ public_id: String, secure_url: String }],
     confirmEmail: Date || Boolean,
     newPassword: String,
     confirmNewPassword: String,

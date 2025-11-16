@@ -94,4 +94,16 @@ export const generalField = {
       Types.ObjectId.isValid(value) || helper.message("Invalid objectId Format")
     );
   }),
+
+  file: {
+    fieldname: Joi.string(),
+    originalname: Joi.string(),
+    encoding: Joi.string(),
+    destination: Joi.string(),
+    mimetype: Joi.string(),
+    size: Joi.number().positive(),
+    filename: Joi.string(),
+    path: Joi.string(),
+    finalPath: Joi.string(),
+  },
 };
